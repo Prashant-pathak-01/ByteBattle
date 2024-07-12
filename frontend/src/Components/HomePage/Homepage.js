@@ -12,9 +12,9 @@ import { Link } from "react-router-dom";
 import Header from "./Header";
 function Home() {
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between  bg-Color01">
       <Header></Header>
-      <main className="flex-1 container mx-auto px-4 py-8 bg-Color01">
+      <main className="flex-1 container mx-auto px-4 py-8">
         <section className="mt-8">
           <div className="text-center">
             <div className="flex md:flex-row flex-col items-center w-full justify-center">
