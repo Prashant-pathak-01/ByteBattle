@@ -7,7 +7,8 @@ import {
   getNumber,
   getRanking,
 } from "../Controllers/user.js";
-import { addSubmission, getSubmission } from "../Controllers/Submissions.js";
+import { addSubmission, getSubmission } from "../Controllers/submissions.js";
+
 const route = express.Router();
 route.get("/getQuestions", getQuestions);
 route.post("/getQuestion", getQuestion);
