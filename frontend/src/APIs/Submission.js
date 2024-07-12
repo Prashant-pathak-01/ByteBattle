@@ -1,6 +1,5 @@
 import axios from "axios";
-
-const api = "http://localhost:8000";
+const api = "https://bytebattle.onrender.com";
 
 export const addSubmission = async (data) => {
   try {
