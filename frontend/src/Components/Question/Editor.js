@@ -175,10 +175,10 @@ const Editor = ({ input, output, submitted, question }) => {
           </button>
         </div>
       </div>
-      <div className="flex md:h-full h-screen mt-10 m-6 p-4">
+      <div className="flex md:h-full h-screen mt-10 md:m-6 m-2 md:p-4 p-0">
         <div className="relative flex w-full h-4/5 bg-white rounded-lg overflow-hidden">
           <div
-            className="absolute top-0 left-0 w-12 bg-Color04 text-gray-500 p-2 text-right select-none h-full overflow-hidden pt-4"
+            className="absolute top-0 left-0 w-6 md:w-12 bg-Color04 text-gray-500 p-2 text-right select-none h-full overflow-hidden pt-4"
             ref={lineNumbersRef}
           >
             {lineNumbers.map((lineNumber) => (
@@ -195,7 +195,7 @@ const Editor = ({ input, output, submitted, question }) => {
           <textarea
             id="textbox"
             ref={textAreaRef}
-            className="flex-1 p-4 pl-16 resize-none outline-none overflow-y-scroll h-full bg-Color01 text-Color07 font-mono"
+            className="flex-1 p-4 md:pl-16 pl-8 resize-none outline-none overflow-y-scroll h-full bg-Color01 text-Color07 font-mono"
             value={code}
             onChange={(e) => setCode(e.target.value)}
             onScroll={handleScroll}

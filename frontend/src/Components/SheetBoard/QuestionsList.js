@@ -25,9 +25,14 @@ export const QuestionsList = () => {
       {questions.length > 0 ? (
         <div className="flex flex-col p-8">
           {questions.map((question) => (
-            <Link key={question._id} to={`/sheet/${question.Number}`}>
+            <Link key={question._id} to={`/sheet/${question?.Number}`}>
               <div className="p-4 mb-6 bg-Color03 text-white cursor-pointer rounded w-full hover:bg-Color05 transition-all hover:scale-105 flex flex-row items-center justify-between">
-                <h1 className="">{question.Name}</h1>
+                <div className="flex flex-row items-center">
+                  <h1 className="font-bold mr-2 text-lg">
+                    {question?.Number}.
+                  </h1>
+                  <h1> {question?.Name}</h1>
+                </div>
                 {question?.Lavel == "Easy" ? (
                   <p className="w-20 text-center text-green-600">Easy</p>
                 ) : question?.Lavel == "Medium" ? (

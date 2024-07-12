@@ -28,11 +28,11 @@ function Discription({ question }) {
           <p className="text-Color07 p-4 mt-4">{question?.Details}</p>
           <div className="text-Color07 p-4">
             <h2 className="text-xl font-semibold">Input Format :</h2>
-            <p>{question?.InputFormat}</p>
+            <p className="ml-4 mt-2">{question?.InputFormat}</p>
           </div>
           <div className="text-Color07 p-4">
             <h2 className="text-xl font-semibold">Output Format :</h2>
-            <p>{question?.OutputFormat}</p>
+            <p className="ml-4 mt-2">{question?.OutputFormat}</p>
           </div>
           <div className="text-Color07 p-4">
             <h2 className="text-xl font-semibold">Example :</h2>
