@@ -5,6 +5,7 @@ import SheetBoard from "./Components/SheetBoard/Sheetboard";
 import DashBoard from "./Components/DashBoard/Dashboard";
 import Login from "./Components/HomePage/Authentication/Login";
 import SignIn from "./Components/HomePage/Authentication/Signup";
+import Question from "./Components/Question/Questions";
 function App() {
   return (
     <div>
@@ -47,6 +48,14 @@ function App() {
             element={
               <>
                 <SheetBoard></SheetBoard>
+              </>
+            }
+          ></Route>
+          <Route
+            path="/sheet/:id"
+            element={
+              <>
+                <Question></Question>
               </>
             }
           ></Route>
