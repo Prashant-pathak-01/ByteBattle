@@ -6,6 +6,7 @@ import DashBoard from "./Components/DashBoard/Dashboard";
 import Login from "./Components/HomePage/Authentication/Login";
 import SignIn from "./Components/HomePage/Authentication/Signup";
 import Question from "./Components/Question/Questions";
+import BattleGround from './Components/DashBoard/BattleGround'
 function App() {
   return (
     <div>
@@ -59,6 +60,8 @@ function App() {
               </>
             }
           ></Route>
+
+      <Route path="/:wildcard" element={<BattleGround />} />
         </Routes>
       </Router>
     </div>
