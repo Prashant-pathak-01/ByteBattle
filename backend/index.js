@@ -206,6 +206,7 @@ const sendMessageToAll = async () => {
   //     })
   //   }
   // });
+  ws.on('close',() => {if(pendingUser == ws) pendingUser = null})
 })
 
 database();
