@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
+import {RedirectToSignIn, SignedIn, SignedOut } from "@clerk/clerk-react";
 import Ranking from "./Ranking";
 import Submissions from "./Submissions";
 import QuestionsList from "./QuestionsList";

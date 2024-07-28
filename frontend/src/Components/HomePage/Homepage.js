@@ -3,14 +3,39 @@ import {
   SignedIn,
   SignedOut,
   UserButton,
-  UserProfile,
+  UserProfile, useUser, 
 } from "@clerk/clerk-react";
+
+import RollingButton from './RollingButton.js';
+import './load.css';
 import GitHubIcon from "@mui/icons-material/GitHub";
 import SWORD from "./../../Media/Homepage/swords.png";
-import React from "react";
-import { Link } from "react-router-dom";
+import React,{useEffect,useState} from "react";
+import { Link, useNavigate  } from "react-router-dom";
 import Header from "./Header";
 function Home() {
+  const [wait, setWait] = useState(false);
+  const [socket, setSocket] = useState(null);
+  if(!localStorage.getItem('cfHandle')){
+    let foo = prompt('Type cf handle here');
+    localStorage.setItem('cfHandle',foo);
+  }
+  const { user } = useUser();
+  const navigate = useNavigate();
+  useEffect(() => {
+    
+    const ws = new WebSocket('ws://localhost:8080/');
+      setSocket(ws);
+      console.log("connected");
+      ws.onmessage = (event) => {
+        var dup=event.data;
+        dup='/'+dup;
+        navigate(dup);
+      };
+      return () => {
+        ws.close();
+    };
+  }, []);
   return (
     <div className="min-h-screen flex flex-col justify-between  bg-Color01">
       <Header></Header>
@@ -40,13 +65,30 @@ function Home() {
               your coding aspirations into reality with ByteBattle!
             </p>
             <Link to="/sheet">
-              <button class="relative inline-flex w-40 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                <span class="relative text-lg w-40 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                  Start
+              <button className="relative inline-flex w-40 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                <span className="relative text-lg w-40 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                  Solve Sheet
                 </span>
               </button>
             </Link>
-          </div>
+            
+              <button className="relative inline-flex w-40 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800" 
+              onClick={()=>{
+                // add a user to the waiting queue
+                const message = JSON.stringify({
+                  type: 'join',
+                  email: user,
+                  cfHandle: localStorage.getItem('cfHandle')
+                });
+                socket.send(message);// send mail and cf
+                setWait(true);
+              }}>
+                <span className="relative text-lg w-40 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                  Start 1v1
+                </span>
+              </button>
+
+             </div>
         </section>
       </main>
 
@@ -64,6 +106,10 @@ function Home() {
           Made by - Prashant Pathak
         </h1>
       </footer>
+   
+    
+      <RollingButton loading={wait} />
+
     </div>
   );
 }
