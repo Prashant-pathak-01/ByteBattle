@@ -6,6 +6,7 @@ import {
   updateSubmission,
   getNumber,
   getRanking,
+  updateCFID,
 } from "../Controllers/user.js";
 import { addSubmission, getSubmission } from "../Controllers/submissions.js";
 
@@ -18,9 +19,9 @@ route.post("/updateUser", updateUser);
 route.post("/updateSubmission", updateSubmission);
 route.post("/getNumber", getNumber);
 route.post("/getRanking", getRanking);
+route.post("/updateCFID", updateCFID);
 
 route.post("/addSubmission", addSubmission);
 route.post("/getSubmission", getSubmission);
-
 
 export default route;

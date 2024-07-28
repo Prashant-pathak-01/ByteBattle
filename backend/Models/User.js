@@ -38,6 +38,18 @@ const schema = new mongoose.Schema({
     type: String,
     default: "Unknown",
   },
+  CFID: {
+    type: String,
+    default: null,
+  },
+  Win: {
+    type: Number,
+    default: 0,
+  },
+  Loose: {
+    type: String,
+    default: 0,
+  },
 });
 schema.index({ Email: 1 }, { unique: true });
 const user = mongoose.model("User", schema, "User");

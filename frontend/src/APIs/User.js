@@ -45,3 +45,12 @@ export const getRanking = async (data) => {
     console.log(error.message);
   }
 };
+
+export const updateCFID = async (data) => {
+  try {
+    let res = await axios.post(`${api}/updateCFID`, data);
+    return res;
+  } catch (error) {
+    console.log(error.message);
+  }
+};

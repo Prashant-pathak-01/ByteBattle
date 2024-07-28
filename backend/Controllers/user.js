@@ -141,3 +141,14 @@ export const getRanking = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const updateCFID = async (req, res) => {
+  try {
+    let user = await User.findOne({ Email: req.body.email });
+    user.CFID = req.body.cfId;
+    await user.save();
+    return res.status(200).json({ status: 1 });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
