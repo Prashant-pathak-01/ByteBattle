@@ -192,7 +192,6 @@ export const updateGameResult = async (req, res) => {
     await user.save();
     return res.status(200).json({ message: "Updated" });
   } catch (error) {
-    console.error("Error fetching data:", error);
     return res
       .status(500)
       .json({ message: "Some error occurred", error: "error" });

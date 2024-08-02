@@ -18,7 +18,7 @@ export const updateGameResult = async (data) => {
     let res = axios.post(`${api}/updateGameResult`, data);
     return res;
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
   }
 };
 
