@@ -23,7 +23,7 @@ import P2Profile from "./../../Media/Battleground/avatars/A1.png";
 import WINNER01 from "./../../Media/Battleground/trophy.png";
 import WINNER02 from "./../../Media/Battleground/medal.png";
 import { Skeleton, Typography } from "@mui/material";
-
+// 20.198.25.250:3000
 function BattleGround() {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -42,7 +42,7 @@ function BattleGround() {
   const [winner, setWinner] = useState(null);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8000/");
+    const ws = new WebSocket("ws://20.198.25.250:8000/");
     ws.onopen = () => {
       console.log("WebSocket connection opened");
       setSocket(ws);
@@ -106,7 +106,7 @@ function BattleGround() {
       if (user) {
         try {
           const response = await axios.post(
-            "http://localhost:8000/getCFurl",
+            "http://20.198.25.250:8000/getCFurl",
             {
               email: userEmail,
               location: currentPath,
@@ -115,7 +115,7 @@ function BattleGround() {
           setPlayers({ p1: response.data.p1, p2: response.data.p2 });
           setProblem(response.data);
           const pageResponse = await axios.post(
-            "http://localhost:8000/getQuestionDetails",
+            "http://20.198.25.250:8000/getQuestionDetails",
             {
               url: response.data.message,
             }
