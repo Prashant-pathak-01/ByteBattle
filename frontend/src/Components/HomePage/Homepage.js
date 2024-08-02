@@ -28,7 +28,7 @@ function Home() {
       }
     };
     getData();
-    const ws = new WebSocket("ws://localhost:8080/");
+    const ws = new WebSocket("ws://localhost:8081/");
     setSocket(ws);
     console.log("connected");
     ws.onmessage = (event) => {

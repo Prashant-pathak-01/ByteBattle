@@ -42,7 +42,7 @@ function BattleGround() {
   const [winner, setWinner] = useState(null);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080/");
+    const ws = new WebSocket("ws://localhost:8081/");
     ws.onopen = () => {
       console.log("WebSocket connection opened");
       setSocket(ws);
