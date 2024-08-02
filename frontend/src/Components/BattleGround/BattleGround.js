@@ -89,11 +89,10 @@ function BattleGround() {
 
   useEffect(() => {
     const updateScore = async () => {
-      let res;
       if (winner == User?.CFID) {
-        res = await updateGameResult({ email: User?.Email, result: 1 });
+        await updateGameResult({ email: User?.Email, result: 1 });
       } else {
-        res = await updateGameResult({ email: User?.Email, result: -1 });
+        await updateGameResult({ email: User?.Email, result: -1 });
       }
     };
     if (winner != null) updateScore();

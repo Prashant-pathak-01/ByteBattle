@@ -1,7 +1,7 @@
-// websocket.js
 import { WebSocketServer } from "ws";
 import axios from "axios";
 import { JSDOM } from "jsdom";
+import User from "../Models/User.js";
 
 const games = [];
 const page = {};
@@ -173,7 +173,6 @@ export const getCFurl = async (req, res) => {
 };
 
 export const updateGameResult = async (req, res) => {
-  console.log(req);
   try {
     const email = req.body.email;
     if (!email) {
@@ -194,6 +193,8 @@ export const updateGameResult = async (req, res) => {
     return res.status(200).json({ message: "Updated" });
   } catch (error) {
     console.error("Error fetching data:", error);
-    return res.status(500).json({ message: "Some error occurred" });
+    return res
+      .status(500)
+      .json({ message: "Some error occurred", error: "error" });
   }
 };

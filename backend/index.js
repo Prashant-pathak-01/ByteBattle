@@ -1,13 +1,13 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import http from "http"; // Import http module to create an HTTP server
+import http from "http";
 import database from "./Database/db.js";
 import Routes from "./Routes/Route.js";
 import { initializeWebSocket } from "./Controllers/game.js";
 
 const app = express();
-const server = http.createServer(app); // Create HTTP server
+const server = http.createServer(app);
 
 app.use(cors());
 app.use(bodyParser.json({ extended: true }));
