@@ -1,5 +1,5 @@
 import axios from "axios";
-const api = "http://localhost:8000";
+const api = "http://20.198.25.250:8000";
 
 export const userData = async (data) => {
   try {
