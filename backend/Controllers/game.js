@@ -92,7 +92,7 @@ export const updateGameResult = async (req, res) => {
   }
 };
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({ port: 8081 });
 wss.on("connection", (ws) => {
   ws.on("error", console.error);
   ws.on("message", async (data) => {
