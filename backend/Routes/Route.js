@@ -9,6 +9,11 @@ import {
   updateCFID,
 } from "../Controllers/user.js";
 import { addSubmission, getSubmission } from "../Controllers/submissions.js";
+import {
+  getQuestionDetails,
+  getCFurl,
+  updateGameResult,
+} from "../Controllers/game.js";
 
 const route = express.Router();
 route.get("/getQuestions", getQuestions);
@@ -23,5 +28,9 @@ route.post("/updateCFID", updateCFID);
 
 route.post("/addSubmission", addSubmission);
 route.post("/getSubmission", getSubmission);
+
+route.post("/getQuestionDetails", getQuestionDetails);
+route.post("/getCFurl", getCFurl);
+route.post("/updateGameResult", updateGameResult);
 
 export default route;

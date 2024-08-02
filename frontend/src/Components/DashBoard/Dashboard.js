@@ -40,7 +40,7 @@ function Dashboard() {
         <RedirectToSignIn redirectUrl={"/dashboard"} />
       </SignedOut>
       <SignedIn>
-        <div className="bg-Color02 m-4 p-4 w-4/5 md:p-6 rounded-lg mt-10 flex md:flex-row flex-col justify-between ">
+        <div className="bg-Color02 m-4 p-4 md:w-4/5 w-80 md:p-6 rounded-lg mt-10 flex md:flex-row flex-col justify-between ">
           <div className="bg-Color04 md:w-1/3  md:m-4 mb-10 flex flex-col justify-between p-8 items-center">
             <h1 className="text-Color07 font-semibold text-xl w-full border-b-2 text-center pb-2 border-Color07">
               ByteBattle Sheet
@@ -110,21 +110,21 @@ function Dashboard() {
 
           <div className="bg-Color04 md:w-1/3 md:m-4 mb-10 flex flex-col p-8 items-center">
             <h1 className="text-Color07 font-semibold text-xl border-b-2 pb-2 w-full text-center border-Color07">
-              ByteBattle 1vs1
+              ByteBattle Arena
             </h1>
-            <div className="h-full mt-6 flex flex-col">
-              <div className=" items-center flex flex-col p-2">
+            <div className="mt-6 flex flex-col">
+              <div className="mb-2 items-center flex flex-col p-2">
                 <img src={CF_LOGO} className="w-20 h-20 "></img>
                 <div className="mt-4">
                   {User?.CFID == null ? (
-                    <div>
+                    <div className="flex md:flex-row flex-col items-center justify-center">
                       <input
                         className="bg-Color06 rounded-md p-1 focus:outline-none pl-4 text-white"
                         placeholder="Enter Codeforces Id"
                         onChange={(e) => setCFID(e.target.value)}
                       ></input>
                       <button
-                        className="text-Color07 bg-blue-500 p-1 rounded-md ml-2 w-14 border-2 border-Color07 hover:scale-95 "
+                        className="text-Color07 bg-blue-500 p-1 rounded-md ml-2 md:w-14 border-2 border-Color07 hover:scale-95 md:mt-0 mt-4 w-28"
                         onClick={() => updateCFid(CFID)}
                       >
                         Add
@@ -148,9 +148,39 @@ function Dashboard() {
                   )}
                 </div>
               </div>
-              <div className="bg-red-400 w-full mt-4 h-full">
-                stats will be shown here with a chart. lost games win games
-                total games
+              <div className="items-center flex justify-center flex-col w-full mt-4 h-full">
+                <div className="flex flex-row md:w-72 w-64 bg-red-600 rounded-md border-2 cursor-pointer">
+                  <span
+                    className="bg-green-600 rounded-l-md border-2 border-green-700 hover:bg-green-700 transition-all"
+                    style={{
+                      width: `${
+                        ((User?.Win || 0) * 100) /
+                        ((User?.Win || 0) + (User?.Loose || 0))
+                      }%`,
+                    }}
+                  >
+                    .
+                  </span>
+                  <span
+                    className="bg-red-500 rounded-r-md border-2 border-red-700 hover:bg-red-700 transition-all"
+                    style={{
+                      width: `${
+                        ((User?.Loose || 0) * 100) /
+                        ((User?.Win || 0) + (User?.Loose || 0))
+                      }%`,
+                    }}
+                  ></span>
+                </div>
+                <div className="flex flex-row justify-between w-full p-8">
+                  <div className="flex flex-col items-center bg-green-500 border-2 border-green-900   w-24 h-16 justify-center rounded-md ">
+                    <h1 className="font-bold text-xl">{User?.Win}</h1>
+                    <h1 className="text-sm font-serif">Won</h1>
+                  </div>
+                  <div className="flex flex-col items-center bg-red-500 border-2 border-red-700 w-24 h-16 justify-center rounded-md ">
+                    <h1 className="font-bold text-xl">{User?.Loose}</h1>
+                    <h1 className="text-sm font-serif">Lost</h1>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -167,7 +197,7 @@ function Dashboard() {
                   </div>
                 ))
               ) : (
-                <div className="text-Color07 mt-20 text-center font-mono">
+                <div className="text-Color07 mt-20 mb-20 text-center font-mono">
                   You haven't solved any problem yet !
                 </div>
               )}

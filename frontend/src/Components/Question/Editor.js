@@ -5,50 +5,21 @@ import LanguageSelector from "./LanguageSelector";
 import LOADING from "./../../Media/loading.svg";
 import { addSubmission } from "../../APIs/Submission";
 import { useUser } from "@clerk/clerk-react";
-
-import { useLocation,useNavigate } from 'react-router-dom';
-
-import { ToastContainer, toast } from 'react-toastify';
 import { updateUser, updateSubmission } from "./../../APIs/User";
-import { stringify } from "qs";
 
-const Editor = ({ input, output, submitted, question,solve }) => {
-  
-  const location = useLocation(); 
+const Editor = ({ input, output, submitted, question }) => {
   const [code, setCode] = useState("");
-  
+
   const [socket, setSocket] = useState(null);
   const [language, setLanguage] = useState("");
   const textAreaRef = useRef(null);
   const lineNumbersRef = useRef(null);
   const [lineNumbers, setLineNumbers] = useState([]);
   const { user } = useUser();
-  console.log(solve+" hah ")
   useEffect(() => {
-    
-    const ws = new WebSocket('ws://localhost:8080/');
-    setSocket(ws);
     const lines = code.split("\n").length;
     setLineNumbers(Array.from({ length: lines }, (_, i) => i + 1));
-      console.log("connectedddd");
-      ws.onmessage = (event) => {
-        var dup=event.data;
-        toast(dup);
-        alert(dup);
-      };
-   
-  ws.onopen = () => {
-      const message = JSON.stringify({
-        type: 'add',
-        email: user,
-        url: (location.pathname.toString().substring(1)).toString()
-      });
-      console.log(location.pathname)
-    ws.send(message); // Send the message
-  }; return () => {
-    ws.close();
-}
-  }, [user,code]);
+  }, [code]);
 
   const handleScroll = () => {
     if (textAreaRef.current && lineNumbersRef.current) {
@@ -121,7 +92,7 @@ const Editor = ({ input, output, submitted, question,solve }) => {
     }
 
     let res = true;
-    if(!solve){try {
+    try {
       let tested = false;
       if (question?.TestCases && question?.TestCases.length > 0) {
         const promises = question.TestCases.map((test) =>
@@ -173,17 +144,6 @@ const Editor = ({ input, output, submitted, question,solve }) => {
         Language: language,
         Status: res ? "Passed" : "Failed",
       });
-    }}else{
-      const [_, contestId, problemId] = solve.match(/contest\/(\d+)\/problem\/(\w+)/) || [];
-      window.open(`https://codeforces.com/contest/${contestId}/submit/${problemId}`)
-      
-      console.log('sent 1 ');
-      const message = JSON.stringify({
-        type: 'refresh',
-        email: user,
-        cfHandle: localStorage.getItem('cfHandle')
-      });
-      socket.send(message)
     }
   };
 
@@ -241,7 +201,7 @@ const Editor = ({ input, output, submitted, question,solve }) => {
             onChange={(e) => setCode(e.target.value)}
             onScroll={handleScroll}
             onKeyDown={handleKeyDown}
-            style={{minHeight:'80vh'}}
+            style={{ minHeight: "80vh" }}
           ></textarea>
         </div>
       </div>

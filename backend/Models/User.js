@@ -47,7 +47,7 @@ const schema = new mongoose.Schema({
     default: 0,
   },
   Loose: {
-    type: String,
+    type: Number,
     default: 0,
   },
 });

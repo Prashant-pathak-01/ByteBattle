@@ -1,5 +1,4 @@
 import { useUser } from "@clerk/clerk-react";
-
 import RollingButton from "./RollingButton.js";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import SWORD from "./../../Media/Homepage/swords.png";
@@ -8,14 +7,15 @@ import { Link, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import CFID_Modal from "./CFID_Modal.js";
 import { userData } from "../../APIs/User.js";
+
 function Home() {
   const [Matching, setMatching] = useState(false);
   const [socket, setSocket] = useState(null);
   const [openCFIDModal, setOpenCFIDModal] = useState(false);
-
   const { user, isSignedIn } = useUser();
   const navigate = useNavigate();
   const [User, setUser] = useState();
+
   useEffect(() => {
     const getData = async () => {
       if (isSignedIn) {
@@ -32,17 +32,33 @@ function Home() {
     setSocket(ws);
     console.log("connected");
     ws.onmessage = (event) => {
-      var dup = event.data;
-      dup = "/" + dup;
+      var dup = "/" + event.data;
       navigate(dup);
     };
     return () => {
       ws.close();
     };
-  }, [openCFIDModal]);
+  }, [isSignedIn, navigate, user]);
+
+  const handleStart1v1 = () => {
+    if (User) {
+      if (User.CFID == null) {
+        setOpenCFIDModal(true);
+      } else {
+        const message = JSON.stringify({
+          type: "join",
+          email: User.Email,
+          cfHandle: User.CFID,
+        });
+        socket.send(message);
+        setMatching(true);
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-between  bg-Color01">
-      <Header></Header>
+      <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
         <section className="mt-8">
           <div className="text-center">
@@ -54,7 +70,8 @@ function Home() {
               <img
                 src={SWORD}
                 className="w-10 md:mt-0 mt-6 h-10 ml-4 mb-2"
-              ></img>
+                alt="SWORD"
+              />
             </div>
             <p className="text-lg mb-4 text-Color07 p-16 font-medium leading-relaxed tracking-wide">
               Welcome to ByteBattle! Our website is designed to help beginners
@@ -69,31 +86,20 @@ function Home() {
               your coding aspirations into reality with ByteBattle!
             </p>
             <Link to="/sheet">
-              <button className="relative inline-flex w-40 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-                <span className="relative text-lg w-40 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                  Solve Sheet
+              <button className="relative inline-flex w-54 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
+                <span className="relative text-lg w-54 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                  ByteBattle Sheet
                 </span>
               </button>
             </Link>
 
             <button
-              className="relative inline-flex w-40 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
-              onClick={() => {
-                if (User?.CFID == null) {
-                  setOpenCFIDModal(true);
-                } else {
-                  const message = JSON.stringify({
-                    type: "join",
-                    email: User?.Email,
-                    cfHandle: User?.CFID,
-                  });
-                  socket.send(message);
-                  setMatching(true);
-                }
-              }}
+              className="relative inline-flex w-54 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
+              onClick={handleStart1v1}
+              disabled={!User}
             >
-              <span className="relative text-lg w-40 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-                Start 1v1
+              <span className="relative text-lg w-54 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                ByteBattle Arena
               </span>
             </button>
             {openCFIDModal && (
@@ -112,11 +118,12 @@ function Home() {
         <a
           href="https://github.com/Prashant-pathak-01/ByteBattle"
           target="_blank"
-          className="scale-125  cursor-pointer md:m-0 m-4 hover:scale-150 transition-all hover:bg-white hover:text-Color01 rounded-full flex items-center"
+          className="scale-125 cursor-pointer md:m-0 m-4 hover:scale-150 transition-all hover:bg-white hover:text-Color01 rounded-full flex items-center"
+          rel="noopener noreferrer"
         >
-          <GitHubIcon></GitHubIcon>
+          <GitHubIcon />
         </a>
-        <h1 className=" hover:text-red-400 transition-all cursor-pointer hover:scale-110">
+        <h1 className="hover:text-red-400 transition-all cursor-pointer hover:scale-110">
           Made by - Prashant Pathak
         </h1>
       </footer>
