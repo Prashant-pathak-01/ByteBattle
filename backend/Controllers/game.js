@@ -1,11 +1,123 @@
+// websocket.js
 import { WebSocketServer } from "ws";
 import axios from "axios";
 import { JSDOM } from "jsdom";
-import User from "./../Models/User.js";
 
 const games = [];
 const page = {};
-var pendingUser = null;
+let pendingUser = null;
+
+export const initializeWebSocket = (server) => {
+  const wss = new WebSocketServer({ server });
+  wss.on("connection", (ws) => {
+    ws.on("error", console.error);
+
+    ws.on("message", async (data) => {
+      data = JSON.parse(data.toString());
+
+      if (data.type === "add") {
+        if (!page[data.url]) page[data.url] = [];
+        page[data.url].push(ws);
+      } else if (data.type === "join") {
+        const currentEmail = data.email;
+        const currentCfHandle = data.cfHandle;
+
+        if (pendingUser && currentEmail !== pendingUser.email) {
+          const all = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+          let url = "";
+          for (let i = 0; i < 4; i++) {
+            url += all[Math.floor(Math.random() * 26)];
+          }
+
+          const apiCodeforces = await axios.get(
+            "https://codeforces.com/api/problemset.problems"
+          );
+          const problemsList = apiCodeforces.data.result.problems;
+          const filteredProblems = problemsList.filter(
+            (problem) => problem.rating <= 1700
+          );
+          const randomIndex = Math.floor(
+            Math.random() * filteredProblems.length
+          );
+          const finalProblem = filteredProblems[randomIndex];
+
+          games.push({
+            ws1: ws,
+            email1: currentEmail,
+            cfHandle1: currentCfHandle,
+            ws2: pendingUser.ws,
+            email2: pendingUser.email,
+            cfHandle2: pendingUser.cfHandle,
+            finalProblem,
+            url: url,
+          });
+
+          ws.send(url);
+          pendingUser.ws.send(url);
+          pendingUser = null;
+        } else {
+          pendingUser = { ws, email: currentEmail, cfHandle: currentCfHandle };
+        }
+      } else if (data.type === "refresh") {
+        console.log("refreshing");
+        [...Array(20)].forEach((_, i) =>
+          setTimeout(() => sendMessageToAll(), i * 4000)
+        );
+      }
+    });
+
+    const checkLatestSubmission = async (cfHandle, finalProblem) => {
+      try {
+        const response = await axios.get(
+          `https://codeforces.com/api/user.status?handle=${cfHandle}&from=1&count=1`
+        );
+        const latestSubmission = response.data.result[0];
+
+        if (
+          latestSubmission &&
+          latestSubmission.problem.contestId === finalProblem.contestId &&
+          latestSubmission.problem.index === finalProblem.index
+        ) {
+          return true;
+        }
+      } catch (error) {
+        console.error("Error fetching latest submission:", error);
+      }
+      return false;
+    };
+
+    const sendMessageToAll = async () => {
+      for (let i = games.length - 1; i >= 0; i--) {
+        const game = games[i];
+        try {
+          const cf1Matches = await checkLatestSubmission(
+            game.cfHandle1,
+            game.finalProblem
+          );
+          const cf2Matches = await checkLatestSubmission(
+            game.cfHandle2,
+            game.finalProblem
+          );
+          if (cf1Matches || cf2Matches) {
+            for (let j = 0; j < page[game.url]?.length; ++j) {
+              if (cf1Matches) {
+                page[game.url][j].send(`${game.cfHandle1}`);
+              } else if (cf2Matches) {
+                page[game.url][j].send(`${game.cfHandle2}`);
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error checking latest submission:", error);
+        }
+      }
+    };
+
+    ws.on("close", () => {
+      if (pendingUser === ws) pendingUser = null;
+    });
+  });
+};
 
 export const getQuestionDetails = async (req, res) => {
   try {
@@ -14,20 +126,14 @@ export const getQuestionDetails = async (req, res) => {
     const dom = new JSDOM(html);
     const document = dom.window.document;
 
-    // Extract problem statement
     const problemStatement =
       document.querySelector(".header")?.nextElementSibling?.innerHTML.trim() ||
       "";
-
-    // Extract input specification
     const inputSpecification =
       document.querySelector(".input-specification")?.innerHTML.trim() || "";
-
-    // Extract output specification
     const outputSpecification =
       document.querySelector(".output-specification")?.innerHTML.trim() || "";
 
-    // Extract sample input and output
     const sampleInputs = [];
     const sampleOutputs = [];
 
@@ -91,108 +197,3 @@ export const updateGameResult = async (req, res) => {
     return res.status(500).json({ message: "Some error occurred" });
   }
 };
-
-const wss = new WebSocketServer({ port: 8081 });
-wss.on("connection", (ws) => {
-  ws.on("error", console.error);
-  ws.on("message", async (data) => {
-    var dupData = data;
-    data = JSON.parse(data.toString());
-
-    if (data.type === "add") {
-      if (!page[data.url]) page[data.url] = [];
-      page[data.url].push(ws);
-    } else if (data.type === "join") {
-      const currentEmail = data.email;
-      const currentCfHandle = data.cfHandle;
-      if (pendingUser && currentEmail != pendingUser.email) {
-        const all = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        var url = all[Math.floor(Math.random() * 26)];
-        url += all[Math.floor(Math.random() * 26)];
-        url += all[Math.floor(Math.random() * 26)];
-        url += all[Math.floor(Math.random() * 26)];
-
-        const apiCodeforces = await axios.get(
-          "https://codeforces.com/api/problemset.problems"
-        );
-        const problemsList = apiCodeforces.data.result.problems;
-        const filteredProblems = problemsList.filter(
-          (problem) => problem.rating <= 1700
-        );
-        const randomIndex = Math.floor(Math.random() * filteredProblems.length);
-        const finalProblem = filteredProblems[randomIndex];
-        games.push({
-          ws1: ws,
-          email1: currentEmail,
-          cfHandle1: currentCfHandle,
-          ws2: pendingUser.ws,
-          email2: pendingUser.email,
-          cfHandle2: pendingUser.cfHandle,
-          finalProblem,
-          url: url,
-        });
-        ws.send(url);
-        pendingUser.ws.send(url);
-        pendingUser = null;
-      } else {
-        pendingUser = { ws, email: currentEmail, cfHandle: currentCfHandle };
-      }
-    } else if (data.type === "refresh") {
-      console.log("refreshing");
-      [...Array(20)].forEach((_, i) =>
-        setTimeout(() => sendMessageToAll(), i * 4000)
-      );
-    }
-  });
-
-  const checkLatestSubmission = async (cfHandle, finalProblem) => {
-    try {
-      const response = await axios.get(
-        `https://codeforces.com/api/user.status?handle=${cfHandle}&from=1&count=1`
-      );
-      const latestSubmission = response.data.result[0];
-
-      if (
-        latestSubmission &&
-        latestSubmission.problem.contestId === finalProblem.contestId &&
-        latestSubmission.problem.index === finalProblem.index
-      ) {
-        return true;
-      }
-    } catch (error) {
-      console.error("Error fetching latest submission:", error);
-    }
-    return false;
-  };
-
-  const sendMessageToAll = async () => {
-    for (let i = games.length - 1; i >= 0; i--) {
-      const game = games[i];
-      try {
-        const cf1Matches = await checkLatestSubmission(
-          game.cfHandle1,
-          game.finalProblem
-        );
-        const cf2Matches = await checkLatestSubmission(
-          game.cfHandle2,
-          game.finalProblem
-        );
-        if (cf1Matches || cf2Matches) {
-          for (let j = 0; j < page[game.url]?.length; ++j) {
-            if (cf1Matches) {
-              page[game.url][j].send(`${game.cfHandle1}`);
-            } else if (cf2Matches) {
-              page[game.url][j].send(`${game.cfHandle2}`);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error checking latest submission:", error);
-      }
-    }
-  };
-
-  ws.on("close", () => {
-    if (pendingUser == ws) pendingUser = null;
-  });
-});
