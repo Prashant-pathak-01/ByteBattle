@@ -27,7 +27,7 @@ import { Skeleton, Typography } from "@mui/material";
 function BattleGround() {
   const location = useLocation();
   const currentPath = location.pathname;
-
+  // console.log(currentPath)
   const { user } = useUser();
   const [User, setUser] = useState();
   const [players, setPlayers] = useState({});
@@ -42,7 +42,7 @@ function BattleGround() {
   const [winner, setWinner] = useState(null);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://20.198.25.250:8000/");
+    const ws = new WebSocket("ws://localhost:8000/");
     ws.onopen = () => {
       console.log("WebSocket connection opened");
       setSocket(ws);
@@ -56,7 +56,8 @@ function BattleGround() {
 
     ws.onmessage = async (event) => {
       const message = event.data;
-      if (message == User?.CFID) {
+      // console.log(message+" "+User?.CFID);
+      if (message === User?.CFID) {
         const win01 = document.getElementById("player01");
         win01.style.backgroundColor = "green";
         const winnerImage = win01.querySelector("img.hidden");
@@ -98,12 +99,14 @@ function BattleGround() {
     if (winner != null) updateScore();
   }, [winner]);
 
+  // console.log(User?.CFID);
+
   useEffect(() => {
     const fetchProblemData = async () => {
       if (user) {
         try {
           const response = await axios.post(
-            "http://20.198.25.250:8000/getCFurl",
+            "http://localhost:8000/getCFurl",
             {
               email: userEmail,
               location: currentPath,
@@ -112,7 +115,7 @@ function BattleGround() {
           setPlayers({ p1: response.data.p1, p2: response.data.p2 });
           setProblem(response.data);
           const pageResponse = await axios.post(
-            "http://20.198.25.250:8000/getQuestionDetails",
+            "http://localhost:8000/getQuestionDetails",
             {
               url: response.data.message,
             }
@@ -256,7 +259,7 @@ function BattleGround() {
               <h1 className="absolute mr-40 bg-Color04  text-xl p-2 rounded-lg border-2">
                 Players
               </h1>
-              {players.p1 == User?.CFID ? (
+              {players.p1 === User?.CFID ? (
                 <div className="flex flex-col items-center h-60  border-2 rounded-lg p-6 w-full m-4 mt-6 pt-8">
                   <div
                     className="bg-Color06 md:text-base text-sm p-3 m-1 w-full cursor-pointer hover:bg-Color01 transition-all flex flex-row items-center rounded-lg "
@@ -333,7 +336,7 @@ function BattleGround() {
               )}
             </div>
             <div>
-              <Timer />
+              <Timer currentPath={currentPath.substring(1)}/>
             </div>
             <div className="flex justify-center">
               <div>

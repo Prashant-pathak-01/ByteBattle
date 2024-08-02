@@ -13,6 +13,7 @@ import {
   getQuestionDetails,
   getCFurl,
   updateGameResult,
+  getTime
 } from "../Controllers/game.js";
 
 const route = express.Router();
@@ -32,5 +33,6 @@ route.post("/getSubmission", getSubmission);
 route.post("/getQuestionDetails", getQuestionDetails);
 route.post("/getCFurl", getCFurl);
 route.post("/updateGameResult", updateGameResult);
+route.post("/getTime",getTime);
 
 export default route;

@@ -3,9 +3,29 @@ import axios from "axios";
 import { JSDOM } from "jsdom";
 import User from "../Models/User.js";
 
-const games = [];
+var games = [];
 const page = {};
 let pendingUser = null;
+
+export const getTime = (req,res) => {
+  const urlThere = req.body.url;
+  games.forEach(game =>{
+    if(game.url === urlThere){
+      const elapsedMilliseconds = Date.now() - game.time;
+      const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000); // Convert to seconds
+      
+      // Calculate minutes and seconds
+      const minutes = Math.floor(elapsedSeconds / 60);
+      const seconds = elapsedSeconds % 60;
+      // console.log(minutes+" "+seconds);
+      res.json({
+        minutes,
+        seconds
+      });
+    }
+  })
+} 
+
 
 export const initializeWebSocket = (server) => {
   const wss = new WebSocketServer({ server });
@@ -50,6 +70,7 @@ export const initializeWebSocket = (server) => {
             cfHandle2: pendingUser.cfHandle,
             finalProblem,
             url: url,
+            time: Date.now(),
           });
 
           ws.send(url);
@@ -72,13 +93,14 @@ export const initializeWebSocket = (server) => {
           `https://codeforces.com/api/user.status?handle=${cfHandle}&from=1&count=1`
         );
         const latestSubmission = response.data.result[0];
-
+        // console.log(response.data.result[0])
+        console.log(latestSubmission.verdict)
         if (
           latestSubmission &&
           latestSubmission.problem.contestId === finalProblem.contestId &&
-          latestSubmission.problem.index === finalProblem.index
+          latestSubmission.problem.index === finalProblem.index 
         ) {
-          return true;
+          return latestSubmission.verdict;
         }
       } catch (error) {
         console.error("Error fetching latest submission:", error);
@@ -98,14 +120,16 @@ export const initializeWebSocket = (server) => {
             game.cfHandle2,
             game.finalProblem
           );
-          if (cf1Matches || cf2Matches) {
+          if (cf1Matches === 'OK' || cf2Matches === 'OK') {
             for (let j = 0; j < page[game.url]?.length; ++j) {
-              if (cf1Matches) {
+              if (cf1Matches === 'OK') {
                 page[game.url][j].send(`${game.cfHandle1}`);
-              } else if (cf2Matches) {
+              } else if (cf2Matches === 'OK') {
                 page[game.url][j].send(`${game.cfHandle2}`);
               }
             }
+            games = games.filter(gamee => game.url !== gamee.url);
+            // break;
           }
         } catch (error) {
           console.error("Error checking latest submission:", error);
