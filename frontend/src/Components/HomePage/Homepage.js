@@ -120,8 +120,21 @@ function Home() {
         >
           <GitHubIcon />
         </a>
-        <h1 className="hover:text-red-400 transition-all cursor-pointer hover:scale-110">
-          Made by - Prashant Pathak
+        <h1>
+          <p className="font-semibold ml-4">Contributors</p>
+          <a
+            className=" text-blue-400 cursor-pointer hover:text-blue-700 pr-4"
+            href="https://github.com/Prashant-pathak-01"
+          >
+            Prashant Pathak
+          </a>
+          &
+          <a
+            className=" text-blue-400 cursor-pointer hover:text-blue-700 pl-4 "
+            href="https://github.com/BreakTos"
+          >
+            Parth Seth
+          </a>
         </h1>
       </footer>
 
