@@ -23,11 +23,11 @@ import P2Profile from "./../../Media/Battleground/avatars/A1.png";
 import WINNER01 from "./../../Media/Battleground/trophy.png";
 import WINNER02 from "./../../Media/Battleground/medal.png";
 import { Skeleton, Typography } from "@mui/material";
-
+// 20.198.25.250:3000
 function BattleGround() {
   const location = useLocation();
   const currentPath = location.pathname;
-
+  // console.log(currentPath)
   const { user } = useUser();
   const [User, setUser] = useState();
   const [players, setPlayers] = useState({});
@@ -56,7 +56,8 @@ function BattleGround() {
 
     ws.onmessage = async (event) => {
       const message = event.data;
-      if (message == User?.CFID) {
+      // console.log(message+" "+User?.CFID);
+      if (message === User?.CFID) {
         const win01 = document.getElementById("player01");
         win01.style.backgroundColor = "green";
         const winnerImage = win01.querySelector("img.hidden");
@@ -97,6 +98,8 @@ function BattleGround() {
     };
     if (winner != null) updateScore();
   }, [winner]);
+
+  // console.log(User?.CFID);
 
   useEffect(() => {
     const fetchProblemData = async () => {
@@ -256,7 +259,7 @@ function BattleGround() {
               <h1 className="absolute mr-40 bg-Color04  text-xl p-2 rounded-lg border-2">
                 Players
               </h1>
-              {players.p1 == User?.CFID ? (
+              {players.p1 === User?.CFID ? (
                 <div className="flex flex-col items-center h-60  border-2 rounded-lg p-6 w-full m-4 mt-6 pt-8">
                   <div
                     className="bg-Color06 md:text-base text-sm p-3 m-1 w-full cursor-pointer hover:bg-Color01 transition-all flex flex-row items-center rounded-lg "
@@ -333,7 +336,7 @@ function BattleGround() {
               )}
             </div>
             <div>
-              <Timer />
+              <Timer currentPath={currentPath.substring(1)}/>
             </div>
             <div className="flex justify-center">
               <div>
