@@ -54,7 +54,7 @@ function BattleGround() {
   };
 
   useEffect(() => {
-    const ws = new WebSocket("http://20.198.25.250:8000/");
+    const ws = new WebSocket("ws://20.198.25.250:8000/");
     ws.onopen = () => {
       console.log("WebSocket connection opened");
       setSocket(ws);
