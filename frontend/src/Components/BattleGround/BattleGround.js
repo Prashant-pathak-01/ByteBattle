@@ -22,12 +22,12 @@ import P1Profile from "./../../Media/Battleground/avatars/A2.png";
 import P2Profile from "./../../Media/Battleground/avatars/A1.png";
 import WINNER01 from "./../../Media/Battleground/trophy.png";
 import WINNER02 from "./../../Media/Battleground/medal.png";
-import { Skeleton, Typography } from "@mui/material";
-// 20.198.25.250:3000
+import { Skeleton } from "@mui/material";
+import Snackbar from "./SnackBar.js";
+
 function BattleGround() {
   const location = useLocation();
   const currentPath = location.pathname;
-  // console.log(currentPath)
   const { user } = useUser();
   const [User, setUser] = useState();
   const [players, setPlayers] = useState({});
@@ -40,9 +40,21 @@ function BattleGround() {
   const [sampleInputs, setSampleInputs] = useState([]);
   const [sampleOutputs, setSampleOutputs] = useState([]);
   const [winner, setWinner] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [lastSubmissionId, setLastSubmissionId] = useState([0, 0]);
+
+  const getData = async () => {
+    try {
+      const res = await userData({ email: userEmail });
+      setUser(res?.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   useEffect(() => {
-    const ws = new WebSocket("ws://20.198.25.250:8000/");
+    const ws = new WebSocket("http://localhost:8000/");
     ws.onopen = () => {
       console.log("WebSocket connection opened");
       setSocket(ws);
@@ -55,24 +67,45 @@ function BattleGround() {
     };
 
     ws.onmessage = async (event) => {
-      const message = event.data;
-      // console.log(message+" "+User?.CFID);
-      if (message === User?.CFID) {
-        const win01 = document.getElementById("player01");
-        win01.style.backgroundColor = "green";
-        const winnerImage = win01.querySelector("img.hidden");
-        winnerImage?.classList.remove("hidden");
-        const loose02 = document.getElementById("player02");
-        loose02.style.backgroundColor = "red";
-      } else {
-        const win02 = document.getElementById("player02");
-        win02.style.backgroundColor = "green";
-        const loose01 = document.getElementById("player01");
-        loose01.style.backgroundColor = "red";
-        const winnerImage = win02.querySelector("img.hidden");
-        winnerImage?.classList.remove("hidden");
+      try {
+        const response = JSON.parse(event.data);
+        if (
+          (response.message === User?.CFID &&
+            lastSubmissionId[0] !== response.id) ||
+          (response.message !== User?.CFID &&
+            lastSubmissionId[1] !== response.id)
+        ) {
+          if (response.status === 1) {
+            const message = response.message;
+            if (message === User?.CFID) {
+              const win01 = document.getElementById("player01");
+              win01.style.backgroundColor = "green";
+              const winnerImage01 = win01.querySelector("img.hidden");
+              winnerImage01?.classList.remove("hidden");
+              const loose02 = document.getElementById("player02");
+              loose02.style.backgroundColor = "red";
+            } else {
+              const win02 = document.getElementById("player02");
+              win02.style.backgroundColor = "green";
+              const winnerImage02 = win02.querySelector("img.hidden");
+              winnerImage02?.classList.remove("hidden");
+              const loose01 = document.getElementById("player01");
+              loose01.style.backgroundColor = "red";
+            }
+            setWinner(message);
+          } else {
+            handleSnackbar(response, User);
+          }
+
+          if (response.message == User?.CFID) {
+            lastSubmissionId[0] = response.id;
+          } else {
+            lastSubmissionId[1] = response.id;
+          }
+        }
+      } catch (error) {
+        console.error("Error processing WebSocket message:", error);
       }
-      setWinner(message);
     };
 
     ws.onerror = (error) => {
@@ -86,39 +119,33 @@ function BattleGround() {
     return () => {
       ws.close();
     };
-  }, [userEmail, location.pathname]);
+  }, [userEmail, location.pathname, User]); // Add User to dependencies if it affects WebSocket logic
 
   useEffect(() => {
     const updateScore = async () => {
-      if (winner == User?.CFID) {
-        await updateGameResult({ email: User?.Email, result: 1 });
-      } else {
-        await updateGameResult({ email: User?.Email, result: -1 });
+      if (winner) {
+        await updateGameResult({
+          email: User?.Email,
+          result: winner === User?.CFID ? 1 : -1,
+        });
       }
     };
-    if (winner != null) updateScore();
-  }, [winner]);
-
-  // console.log(User?.CFID);
+    if (winner) updateScore();
+  }, [winner, User]);
 
   useEffect(() => {
     const fetchProblemData = async () => {
       if (user) {
         try {
-          const response = await axios.post(
-            "http://20.198.25.250:8000/getCFurl",
-            {
-              email: userEmail,
-              location: currentPath,
-            }
-          );
+          const response = await axios.post("http://localhost:8000/getCFurl", {
+            email: userEmail,
+            location: currentPath,
+          });
           setPlayers({ p1: response.data.p1, p2: response.data.p2 });
           setProblem(response.data);
           const pageResponse = await axios.post(
-            "http://20.198.25.250:8000/getQuestionDetails",
-            {
-              url: response.data.message,
-            }
+            "http://localhost:8000/getQuestionDetails",
+            { url: response.data.message }
           );
 
           const {
@@ -149,13 +176,10 @@ function BattleGround() {
         }
       }
     };
+
     fetchProblemData();
-    const getData = async () => {
-      let res = await userData({ email: userEmail });
-      setUser(res?.data);
-    };
     getData();
-  }, [user, currentPath, userEmail]);
+  }, [user, currentPath]);
 
   const handleSubmit = async () => {
     if (problem) {
@@ -166,7 +190,7 @@ function BattleGround() {
       );
       const message = JSON.stringify({
         type: "refresh",
-        email: user,
+        email: userEmail,
         cfHandle: localStorage.getItem("cfHandle"),
       });
       if (socket && socket.readyState === WebSocket.OPEN) {
@@ -177,6 +201,34 @@ function BattleGround() {
     }
   };
 
+  const handleCloseSnackbar = () => {
+    setOpen(false);
+  };
+
+  const handleSnackbar = async (response, User) => {
+    if (!User) {
+      let res = await getData({ email: userEmail });
+      setUser(res?.data);
+    }
+
+    switch (response.status) {
+      case 0:
+        if (response.message === User?.CFID) {
+          setSnackbarMessage("Runtime error.");
+          setOpen(true);
+        }
+        break;
+      case -1:
+        if (response.message === User?.CFID) {
+          setSnackbarMessage("Compilation error.");
+          setOpen(true);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <>
       <SignedOut>
@@ -184,6 +236,16 @@ function BattleGround() {
       </SignedOut>
       <SignedIn>
         <Header />
+
+        {/* Submission message bar*/}
+        {open && (
+          <Snackbar
+            open={open}
+            message={snackbarMessage}
+            onClose={handleCloseSnackbar}
+          />
+        )}
+
         <div className="bg-Color01 flex md:flex-row flex-col md:h-screen">
           <div className="md:w-full flex flex-col md:m-10 m-4 bg-Color04 rounded-lg border-8 border-Color04 overflow-auto p-4 text-Color07">
             {problemStatement ? (
@@ -336,7 +398,7 @@ function BattleGround() {
               )}
             </div>
             <div>
-              <Timer currentPath={currentPath.substring(1)}/>
+              <Timer currentPath={currentPath.substring(1)} />
             </div>
             <div className="flex justify-center">
               <div>

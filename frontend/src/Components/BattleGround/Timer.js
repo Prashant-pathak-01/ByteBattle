@@ -3,26 +3,27 @@ import axios from "axios";
 
 const Timer = ({ currentPath }) => {
   const [time, setTime] = useState(0); // Time in seconds
-  // console.log(currentPath);
-  const api = "http://20.198.25.250:8000";
+  const api = "http://localhost:8000";
+
   useEffect(() => {
     const fetchTime = async () => {
       try {
         const response = await axios.post(`${api}/getTime`, {
-          url: currentPath
+          url: currentPath,
         });
-        // console.log(response.data)
         const { minutes, seconds } = response.data;
-        const totalSeconds = (minutes * 60) + seconds;
+        const totalSeconds = minutes * 60 + seconds;
         setTime(totalSeconds);
       } catch (error) {
-        console.error('Error fetching time:', error);
+        console.error("Error fetching time:", error);
       }
     };
 
     fetchTime(); // Fetch initial time on mount
 
-    const interval = setInterval(fetchTime, 1000); // Fetch time every second
+    const interval = setInterval(() => {
+      setTime((prevTime) => prevTime + 1); // Increment time every second
+    }, 1000);
 
     return () => clearInterval(interval); // Clean up on unmount
   }, [currentPath]); // Dependency array includes currentPath
