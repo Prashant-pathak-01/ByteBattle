@@ -79,7 +79,9 @@ function Home() {
             <button
               className="relative inline-flex w-54 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
               onClick={() => {
-                if (User) {
+                if (!User) {
+                  window.location.href = "/signup";
+                } else {
                   if (User.CFID == null) {
                     setOpenCFIDModal(true);
                   } else {
@@ -93,12 +95,13 @@ function Home() {
                   }
                 }
               }}
-              disabled={!User}
+              // disabled={!User}
             >
               <span className="relative text-lg w-54 px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
                 ByteBattle Arena
               </span>
             </button>
+
             {openCFIDModal && (
               <CFID_Modal
                 open={openCFIDModal}
