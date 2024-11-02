@@ -80,7 +80,7 @@ function Home() {
               className="relative inline-flex w-54 items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800"
               onClick={() => {
                 if (!User) {
-                  window.location.href = "/signup";
+                  navigate("/signup");
                 } else {
                   if (User.CFID == null) {
                     setOpenCFIDModal(true);
@@ -102,12 +102,50 @@ function Home() {
               </span>
             </button>
 
+            <p className="text-yellow-300 font-light text-sm mt-4">
+              ⚠️ Sometimes Codeforces servers are down, so you might experience
+              issues in the ByteBattle Arena. Please be patient!
+            </p>
+
             {openCFIDModal && (
               <CFID_Modal
                 open={openCFIDModal}
                 close={() => setOpenCFIDModal(false)}
               />
             )}
+          </div>
+        </section>
+        <section className="p-6 pt-0 bg-zinc-800 rounded-xl mt-10">
+          <h1 className="text-center text-3xl font-bold text-white p-8 border-b-2 m-8">
+            Platform Tour
+          </h1>
+          <div className="flex flex-col md:flex-row items-center justify-between md:p-4">
+            <div className="w-full md:w-1/2 flex items-center justify-center">
+              <iframe
+                className="rounded-lg shadow-md border-8 border-zinc-900 w-full md:h-96"
+                src="https://www.youtube.com/embed/ho8Si9Z67Cs"
+                title="Website Tour"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+
+            <div className="w-full md:w-1/2 md:pl-20 text-white mt-4 md:mt-0 md:p-14">
+              <p className="text-center font-light">
+                Is the server down? No worries! Check out this quick tour video
+                to get an insider's view of our platform. It's a fantastic
+                resource to help you navigate our features while we resolve any
+                issues.
+              </p>
+              <p className="mt-10 font-light text-center">
+                ByteBattle is a competitive coding platform designed for
+                beginners and experienced coders alike. It offers a variety of
+                Data Structures and Algorithms (DSA) problems to practice,
+                participate in real-time coding battles, and track your
+                progress. Join our community, improve your coding skills, and
+                challenge yourself against others in exciting contests!
+              </p>
+            </div>
           </div>
         </section>
       </main>
