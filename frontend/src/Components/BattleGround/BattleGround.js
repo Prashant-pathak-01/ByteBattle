@@ -54,7 +54,7 @@ function BattleGround() {
   };
 
   useEffect(() => {
-    const ws = new WebSocket("ws://20.198.25.250:8000/");
+    const ws = new WebSocket("https://bytebattle.onrender.com/");
     ws.onopen = () => {
       console.log("WebSocket connection opened");
       setSocket(ws);
@@ -138,7 +138,7 @@ function BattleGround() {
       if (user) {
         try {
           const response = await axios.post(
-            "http://20.198.25.250:8000/getCFurl",
+            "https://bytebattle.onrender.com/getCFurl",
             {
               email: userEmail,
               location: currentPath,
@@ -147,7 +147,7 @@ function BattleGround() {
           setPlayers({ p1: response.data.p1, p2: response.data.p2 });
           setProblem(response.data);
           const pageResponse = await axios.post(
-            "http://20.198.25.250:8000/getQuestionDetails",
+            "https://bytebattle.onrender.com/getQuestionDetails",
             { url: response.data.message }
           );
 

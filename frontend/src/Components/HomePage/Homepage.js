@@ -28,7 +28,7 @@ function Home() {
       }
     };
     getData();
-    const ws = new WebSocket("ws://20.198.25.250:8000/");
+    const ws = new WebSocket("https://bytebattle.onrender.com/");
     setSocket(ws);
     ws.onmessage = (event) => {
       var dup = "/" + event.data;

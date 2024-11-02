@@ -1,7 +1,7 @@
 import DOMPurify from "dompurify";
 import katex from "katex";
 import axios from "axios";
-const api = "http://20.198.25.250:8000";
+const api = "https://bytebattle.onrender.com";
 
 export const getCFUrl = (data) => {
   return axios.post(`${api}/getCFurl`, data);

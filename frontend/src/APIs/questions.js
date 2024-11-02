@@ -1,5 +1,5 @@
 import axios from "axios";
-const api = "http://20.198.25.250:8000";
+const api = "https://bytebattle.onrender.com";
 export const getQuestions = (data) => {
   try {
     let res = axios.get(`${api}/getQuestions`, data);

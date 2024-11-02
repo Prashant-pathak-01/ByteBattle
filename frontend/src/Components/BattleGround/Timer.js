@@ -3,7 +3,7 @@ import axios from "axios";
 
 const Timer = ({ currentPath }) => {
   const [time, setTime] = useState(0); // Time in seconds
-  const api = "http://20.198.25.250:8000";
+  const api = "https://bytebattle.onrender.com";
 
   useEffect(() => {
     const fetchTime = async () => {

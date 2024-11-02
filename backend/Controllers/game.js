@@ -35,6 +35,7 @@ export const initializeWebSocket = (server) => {
       data = JSON.parse(data.toString());
 
       if (data.type === "add") {
+        console.log(data);
         if (!page[data.url]) page[data.url] = [];
         page[data.url].push(ws);
       } else if (data.type === "join") {
